@@ -1,7 +1,3 @@
-
-markdown
-Salin
-Edit
 # Manajemen dan Informasi BEM Kampus
 
 Sistem manajemen dan informasi BEM Kampus untuk pengolahan data, manajemen proposal, serta komunikasi antar anggota. Platform ini bertujuan untuk mempermudah pengelolaan kegiatan organisasi BEM dengan berbagai fitur yang berguna bagi pengurus dan anggota.
