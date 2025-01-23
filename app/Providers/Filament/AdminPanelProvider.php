@@ -41,12 +41,12 @@ class AdminPanelProvider extends PanelProvider
 
                 // telkom
                 'danger' => '#B71C1C',  // Merah tua (dark red) yang intens dan kuat
-    'gray' => '#616161',    // Abu-abu netral dengan sedikit sentuhan gelap
-    'info' => '#0288D1',    // Biru yang tenang untuk menyeimbangkan merah yang kuat
-    'primary' => '#D32F2F', // Merah cerah yang berani dan mencolok
-    'success' => '#388E3C', // Hijau gelap yang memberi kesan stabil dan sukses
-    'warning' => '#FF8F00', // Kuning-oranye cerah yang enerjik
-])
+                'gray' => '#616161',    // Abu-abu netral dengan sedikit sentuhan gelap
+                'info' => '#0288D1',    // Biru yang tenang untuk menyeimbangkan merah yang kuat
+                'primary' => '#D32F2F', // Merah cerah yang berani dan mencolok
+                'success' => '#388E3C', // Hijau gelap yang memberi kesan stabil dan sukses
+                'warning' => '#FF8F00', // Kuning-oranye cerah yang enerjik
+            ])
 
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
