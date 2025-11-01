@@ -25,20 +25,6 @@ class ProposalResource extends Resource
     protected static ?string $navigationGroup = 'Manajemen Proposal';
     protected static ?int $navigationSort = 2;
 
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::whereIn('status_id', function ($query) {
-            $query->select('id')
-                ->from('statuses')
-                ->whereIn('name', ['pending_menteri', 'pending_sekretaris', 'pending_bendahara', 'pending_wakil_presiden', 'pending_presiden']);
-        })->count();
-    }
-
-    public static function getNavigationBadgeColor(): string
-    {
-        return 'warning';
-    }
-
     public static function form(Form $form): Form
     {
         return $form

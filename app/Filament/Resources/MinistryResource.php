@@ -22,16 +22,6 @@ class MinistryResource extends Resource
     protected static ?string $navigationGroup = 'Manajemen Pengguna';
     protected static ?int $navigationSort = 2;
 
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
-    
-    public static function getNavigationBadgeColor(): string
-    {
-        return 'success';
-    }
-
     public static function form(Form $form): Form
     {
         return $form
