@@ -103,6 +103,10 @@ class DatabaseSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'update_program_kerja']);
         Permission::firstOrCreate(['name' => 'delete_program_kerja']);
 
+        // Activity Log Permissions (Hanya bisa view, tidak bisa create/edit/delete)
+        Permission::firstOrCreate(['name' => 'view_any_activity_log']);
+        Permission::firstOrCreate(['name' => 'view_activity_log']);
+
         // Assign permissions to Super Admin (ALL)
         $superAdminRole->givePermissionTo(Permission::all());
 
@@ -116,6 +120,8 @@ class DatabaseSeeder extends Seeder
             'view_any_proposal', 'view_proposal', 'create_proposal', 'update_proposal', 'delete_proposal', 'delete_any_proposal',
             // Program Kerja Management
             'view_any_program_kerja', 'view_program_kerja', 'create_program_kerja', 'update_program_kerja', 'delete_program_kerja',
+            // Activity Log - Hanya bisa view
+            'view_any_activity_log', 'view_activity_log',
         ]);
 
         // Assign permissions to Wakil Presiden BEM - Mirip Presiden
