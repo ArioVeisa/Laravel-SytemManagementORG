@@ -187,20 +187,20 @@ class ActivityLogResource extends Resource
     
     public static function shouldRegisterNavigation(): bool
     {
-        // Hanya tampilkan di navigation jika user adalah Super Admin
-        return auth()->check() && auth()->user()->hasRole('Super Admin');
+        // Hanya tampilkan di navigation jika user punya permission view_any_activity_log
+        return auth()->check() && auth()->user()->can('view_any_activity_log');
     }
     
     public static function canViewAny(): bool
     {
-        // Hanya Super Admin yang bisa akses
-        return auth()->check() && auth()->user()->hasRole('Super Admin');
+        // Hanya user dengan permission view_any_activity_log yang bisa akses
+        return auth()->check() && auth()->user()->can('view_any_activity_log');
     }
     
     public static function canView($record): bool
     {
-        // Hanya Super Admin yang bisa view
-        return auth()->check() && auth()->user()->hasRole('Super Admin');
+        // Hanya user dengan permission view_activity_log yang bisa view
+        return auth()->check() && auth()->user()->can('view_activity_log');
     }
     
     public static function canCreate(): bool
@@ -215,13 +215,13 @@ class ActivityLogResource extends Resource
     
     public static function canDelete($record): bool
     {
-        // Hanya Super Admin yang bisa delete log
+        // Hanya Super Admin yang bisa delete log (tidak ada permission delete untuk log)
         return auth()->check() && auth()->user()->hasRole('Super Admin');
     }
     
     public static function canDeleteAny(): bool
     {
-        // Hanya Super Admin yang bisa delete log
+        // Hanya Super Admin yang bisa delete log (tidak ada permission delete untuk log)
         return auth()->check() && auth()->user()->hasRole('Super Admin');
     }
 }
