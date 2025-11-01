@@ -27,7 +27,11 @@ class ProposalResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return null; // Badge disabled
+        return static::getModel()::whereIn('status_id', function ($query) {
+            $query->select('id')
+                ->from('statuses')
+                ->whereIn('name', ['pending_menteri', 'pending_sekretaris', 'pending_bendahara', 'pending_wakil_presiden', 'pending_presiden']);
+        })->count();
     }
 
     public static function getNavigationBadgeColor(): string

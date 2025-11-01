@@ -136,18 +136,16 @@ class ProgramKerjaResource extends Resource
                     ->date('d M Y')
                     ->sortable()
                     ->label('Tanggal Selesai'),
-                Tables\Columns\SelectColumn::make('status')
-                    ->label('Status')
-                    ->options([
-                        'draft' => 'Draft',
-                        'disetujui' => 'Disetujui',
-                        'berjalan' => 'Sedang Berjalan',
-                        'selesai' => 'Selesai',
-                        'dibatalkan' => 'Dibatalkan',
-                    ])
-                    ->selectablePlaceholder(false)
-                    ->sortable()
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'gray',
+                        'disetujui' => 'info',
+                        'berjalan' => 'warning',
+                        'selesai' => 'success',
+                        'dibatalkan' => 'danger',
+                    })
+                    ->label('Status'),
                 Tables\Columns\TextColumn::make('anggaran')
                     ->money('IDR')
                     ->label('Anggaran'),

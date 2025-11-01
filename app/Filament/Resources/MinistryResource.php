@@ -24,7 +24,7 @@ class MinistryResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return null; // Badge disabled
+        return static::getModel()::count();
     }
     
     public static function getNavigationBadgeColor(): string
