@@ -17,8 +17,10 @@ class Proposal extends Model
     protected $fillable = [
         'judul',
         'deskripsi',
-        'ministry_id', // Sesuaikan dengan kolom yang benar
+        'ministry_id',
+        'user_id',
         'status_id',
+        'keterangan',
         'tanggal_pengajuan',
         'file_path',
     ];

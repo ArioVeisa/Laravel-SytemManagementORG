@@ -27,10 +27,11 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->favicon(asset('images\U.png'))
+            ->favicon(asset('images/U.png'))
             ->brandName('BEM TEL-U')
-            ->brandLogo(asset('images\TelU.png'))
+            ->brandLogo(asset('images/TelU.png'))
             ->brandLogoHeight('2.5rem')
+            ->darkMode()
             ->colors([
                 // 'danger' => '#E63946',  // Merah cerah
                 // 'gray' => '#1D3557',    // Biru gelap
@@ -54,10 +55,6 @@ class AdminPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
-            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

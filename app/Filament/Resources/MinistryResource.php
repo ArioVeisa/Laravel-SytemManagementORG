@@ -17,10 +17,20 @@ class MinistryResource extends Resource
 {
     protected static ?string $model = Ministry::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationLabel = 'Kementerian';
     protected static ?string $navigationGroup = 'Manajemen Pengguna';
+    protected static ?int $navigationSort = 2;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return null; // Badge disabled
+    }
+    
+    public static function getNavigationBadgeColor(): string
+    {
+        return 'success';
+    }
 
     public static function form(Form $form): Form
     {
@@ -41,10 +51,46 @@ class MinistryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->searchable()
                     ->sortable()
+                    ->label('Nama Kementerian')
+                    ->weight('bold'),
+                Tables\Columns\TextColumn::make('users_count')
+                    ->counts('users')
+                    ->badge()
+                    ->color('info')
+                    ->label('Total Anggota')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('menteri_count')
+                    ->label('Menteri')
+                    ->getStateUsing(function ($record) {
+                        return $record->users()
+                            ->whereHas('roles', fn($query) => $query->where('name', 'Menteri'))
+                            ->count();
+                    })
+                    ->badge()
+                    ->color('warning')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('anggota_count')
+                    ->label('Anggota')
+                    ->getStateUsing(function ($record) {
+                        return $record->users()
+                            ->whereHas('roles', fn($query) => $query->where('name', 'Anggota'))
+                            ->count();
+                    })
+                    ->badge()
+                    ->color('info')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('program_kerjas_count')
+                    ->counts('programKerjas')
+                    ->badge()
+                    ->color('success')
+                    ->label('Program Kerja')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->date('d M Y')
+                    ->sortable()
+                    ->label('Dibuat')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
@@ -56,6 +102,7 @@ class MinistryResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -67,7 +114,8 @@ class MinistryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\UsersRelationManager::class,
+            RelationManagers\ProgramKerjasRelationManager::class,
         ];
     }
 
@@ -76,6 +124,7 @@ class MinistryResource extends Resource
         return [
             'index' => Pages\ListMinistries::route('/'),
             'create' => Pages\CreateMinistry::route('/create'),
+            'view' => Pages\ViewMinistry::route('/{record}'),
             'edit' => Pages\EditMinistry::route('/{record}/edit'),
         ];
     }

@@ -13,11 +13,16 @@ class StatusSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('statuses')->insert([
+        // Gunakan insertOrIgnore untuk menghindari duplikasi
+        DB::table('statuses')->insertOrIgnore([
+            ['name' => 'pending_menteri'],
             ['name' => 'pending_sekretaris'],
+            ['name' => 'pending_bendahara'],
+            ['name' => 'pending_wakil_presiden'],
             ['name' => 'pending_presiden'],
             ['name' => 'approved'],
             ['name' => 'rejected'],
+            ['name' => 'revisi'],
         ]);
     }
 }

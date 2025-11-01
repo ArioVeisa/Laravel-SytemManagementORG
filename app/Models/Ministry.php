@@ -15,5 +15,14 @@ class Ministry extends Model
     {
         return $this->hasMany(Proposal::class);
     }
-    
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function programKerjas()
+    {
+        return $this->hasMany(ProgramKerja::class);
+    }
 }

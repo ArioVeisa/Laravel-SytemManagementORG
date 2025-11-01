@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Spatie\Permission\Models\Role;
+use App\Models\Ministry;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class RolePolicy
+class MinistryPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class RolePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_shield::role');
+        return $user->can('view_any_ministry');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Role $role): bool
+    public function view(User $user, Ministry $ministry): bool
     {
-        return $user->can('view_shield::role');
+        return $user->can('view_ministry');
     }
 
     /**
@@ -31,23 +31,23 @@ class RolePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_shield::role');
+        return $user->can('create_ministry');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Role $role): bool
+    public function update(User $user, Ministry $ministry): bool
     {
-        return $user->can('update_shield::role');
+        return $user->can('update_ministry');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Role $role): bool
+    public function delete(User $user, Ministry $ministry): bool
     {
-        return $user->can('delete_shield::role');
+        return $user->can('delete_ministry');
     }
 
     /**
@@ -55,15 +55,15 @@ class RolePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_shield::role');
+        return $user->can('delete_any_ministry');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Role $role): bool
+    public function forceDelete(User $user, Ministry $ministry): bool
     {
-        return $user->can('force_delete_shield::role');
+        return $user->can('force_delete_ministry');
     }
 
     /**
@@ -71,15 +71,15 @@ class RolePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_shield::role');
+        return $user->can('force_delete_any_ministry');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Role $role): bool
+    public function restore(User $user, Ministry $ministry): bool
     {
-        return $user->can('restore_shield::role');
+        return $user->can('restore_ministry');
     }
 
     /**
@@ -87,15 +87,15 @@ class RolePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_shield::role');
+        return $user->can('restore_any_ministry');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Role $role): bool
+    public function replicate(User $user, Ministry $ministry): bool
     {
-        return $user->can('replicate_shield::role');
+        return $user->can('replicate_ministry');
     }
 
     /**
@@ -103,6 +103,6 @@ class RolePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_shield::role');
+        return $user->can('reorder_ministry');
     }
 }

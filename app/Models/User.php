@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'ministry_id',
     ];
 
     /**
@@ -49,5 +50,13 @@ class User extends Authenticatable
 
     public function proposals(){
         return $this->hasMany(Proposal::class);
+    }
+
+    public function ministry(){
+        return $this->belongsTo(Ministry::class);
+    }
+
+    public function programKerjas(){
+        return $this->hasMany(ProgramKerja::class);
     }
 }
