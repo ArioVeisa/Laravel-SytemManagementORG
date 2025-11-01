@@ -110,7 +110,7 @@ class DatabaseSeeder extends Seeder
         // Assign permissions to Super Admin (ALL)
         $superAdminRole->givePermissionTo(Permission::all());
 
-        // Assign permissions to Presiden BEM - Full access kecuali Shield/Roles
+        // Assign permissions to Presiden BEM - Full access kecuali Shield/Roles dan Activity Log
         $presidenRole->givePermissionTo([
             // User Management
             'view_any_user', 'view_user', 'create_user', 'update_user', 'delete_user',
@@ -120,8 +120,7 @@ class DatabaseSeeder extends Seeder
             'view_any_proposal', 'view_proposal', 'create_proposal', 'update_proposal', 'delete_proposal', 'delete_any_proposal',
             // Program Kerja Management
             'view_any_program_kerja', 'view_program_kerja', 'create_program_kerja', 'update_program_kerja', 'delete_program_kerja',
-            // Activity Log - Hanya bisa view
-            'view_any_activity_log', 'view_activity_log',
+            // Activity Log - Hanya Super Admin yang bisa akses
         ]);
 
         // Assign permissions to Wakil Presiden BEM - Mirip Presiden
