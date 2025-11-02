@@ -34,6 +34,8 @@ Lalu scan QR code dengan **Expo Go** di Android/iOS.
 
 ## ❌ Jika Masih Network Error
 
+**👉 Baca [FIX_NETWORK_ERROR.md](FIX_NETWORK_ERROR.md) untuk solusi lengkap!**
+
 ### Checklist:
 
 1. ✅ Backend running dengan `--host=0.0.0.0`?
