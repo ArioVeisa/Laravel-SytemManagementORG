@@ -20,11 +20,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.arioveisa.MobileVersion"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": []
   }
 }
