@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -22,6 +23,7 @@ export default function App() {
       const loggedIn = await authService.isLoggedIn();
       setIsLoggedIn(loggedIn);
     } catch (error) {
+      console.log('Auth check error:', error);
       setIsLoggedIn(false);
     } finally {
       setIsLoading(false);
@@ -29,7 +31,11 @@ export default function App() {
   };
 
   if (isLoading) {
-    return null; // Atau bisa tambahkan loading screen
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ff0000" />
+      </View>
+    );
   }
 
   return (
@@ -38,7 +44,6 @@ export default function App() {
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
-            animation: 'none',
           }}
         >
           {isLoggedIn ? (
@@ -51,3 +56,12 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
