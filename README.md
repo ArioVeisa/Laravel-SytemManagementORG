@@ -4,7 +4,7 @@ Sistem Manajemen Badan Eksekutif Mahasiswa Telkom University dengan versi Web da
 
 ## 🚀 Quick Start
 
-**Untuk pertama kali setup, baca [START_HERE.md](START_HERE.md) dulu!**
+**Baca [BUILD_APK.md](BUILD_APK.md) untuk cara build APK Android!**
 
 ## 📁 Struktur Project
 
