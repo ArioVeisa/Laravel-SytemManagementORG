@@ -1,109 +1,154 @@
-# 🚀 Cara Build APK Android
+# 🚀 Build APK Android
 
 ## Prerequisites
 
-1. ✅ Backend running dengan ngrok
+1. ✅ Backend + Ngrok running
 2. ✅ Node.js terinstall
 3. ✅ Expo CLI terinstall
 
-## Step 1: Jalankan Backend + Ngrok
+## Method 1: EAS Build (Recommended - Paling Mudah)
+
+### Install EAS CLI
 
 ```bash
-# Terminal 1 - Start Laravel
-cd WebVersion
-php artisan serve --host=0.0.0.0 --port=8000
-
-# Terminal 2 - Start Ngrok (ganti dengan ngrok token kamu)
-ngrok http 8000
-```
-
-Copy ngrok HTTPS URL (misal: `https://xxxx-xx-xxx-xxx.ngrok-free.app`)
-
-## Step 2: Update API URL di Mobile App
-
-Edit `MobileVersion/src/config/api.js`:
-```javascript
-const API_BASE_URL = 'https://xxxx-xx-xxx-xxx.ngrok-free.app/api/v1';
-```
-
-## Step 3: Build APK dengan EAS Build
-
-```bash
-cd MobileVersion
-
-# Install EAS CLI (first time only)
 npm install -g eas-cli
-
-# Login ke Expo account
 eas login
-
-# Configure build
-eas build:configure
-
-# Build APK (local)
-eas build -p android --local
-
-# Atau build di cloud (gratis untuk free tier)
-eas build -p android
 ```
 
-**APK akan tersimpan di:** `MobileVersion/build-*.apk`
-
-## Step 4: Install APK ke Device
+### Configure Project
 
 ```bash
-# Via ADB
-adb install MobileVersion/build-*.apk
-
-# Atau copy manual ke device dan install
+cd MobileVersion
+eas build:configure
 ```
 
-## Alternative: Build Manual (Expo Classic)
+Pilih:
+- **Platform:** Android
+- **Build type:** APK
+
+### Build APK
+
+```bash
+# Build di cloud (Recommended - gratis untuk free tier)
+eas build -p android
+
+# Atau build lokal
+eas build -p android --local
+```
+
+**APK akan muncul di:**
+- Cloud build: Download dari Expo dashboard
+- Local build: `MobileVersion/build-*.apk`
+
+## Method 2: Manual Build (Alternative)
+
+### Step 1: Prebuild Native Code
 
 ```bash
 cd MobileVersion
 
-# Prebuild (generate native folders)
-npx expo prebuild --clean
+# Clean previous builds
+rm -rf android ios
 
-# Build APK with Gradle
+# Generate native folders
+npx expo prebuild --clean
+```
+
+### Step 2: Build APK
+
+```bash
 cd android
+
+# Build APK
 ./gradlew assembleRelease
 
 # APK di: android/app/build/outputs/apk/release/app-release.apk
 ```
 
-## Troubleshooting
+### Step 3: Install
 
-### Build Error?
+```bash
+# Via ADB
+adb install android/app/build/outputs/apk/release/app-release.apk
+
+# Atau copy manual ke device
+```
+
+## Method 3: Development Build (For Testing)
+
 ```bash
 cd MobileVersion
-rm -rf android ios node_modules
-npx expo prebuild --clean
-eas build -p android --local
+
+# Generate APK untuk development
+npx expo run:android --variant release
+
+# APK di: android/app/build/outputs/apk/release/
 ```
 
-### ngrok Warning?
-Already handled di `authService.js` dengan header `ngrok-skip-browser-warning`
+## Troubleshooting
 
-### Port Conflict?
+### Build Error: "No such file or directory: android"
+
 ```bash
-# Check port 8000
-lsof -i :8000
-kill -9 <PID>
+cd MobileVersion
+npx expo prebuild --clean
 ```
 
-## Production Build Checklist
+### Build Error: "Failed to fetch"
+
+```bash
+# Use local build
+eas build -p android --local
+
+# Or check internet connection
+```
+
+### Gradle Error
+
+```bash
+cd MobileVersion/android
+./gradlew clean
+./gradlew assembleRelease
+```
+
+### JDK Not Found
+
+```bash
+# Install JDK 17
+sudo apt install openjdk-17-jdk
+
+# Set JAVA_HOME
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+```
+
+## Quick Start (EAS Build)
+
+```bash
+cd MobileVersion
+
+# First time setup
+npm install -g eas-cli
+eas login
+eas build:configure
+
+# Build
+eas build -p android
+
+# Download APK dari dashboard
+```
+
+## Production Checklist
 
 - [ ] Backend stable & deployed
 - [ ] Ngrok running atau production URL
-- [ ] API URL updated di `api.js`
+- [ ] API URL correct di `api.js`
+- [ ] Test login berhasil di Expo Go
 - [ ] Version updated di `app.json`
-- [ ] Test login berhasil
+- [ ] Icon & splash screen updated
 - [ ] Build APK successful
 - [ ] APK tested di device
 
 ---
 
-**Happy Building! 🎉**
+**Recommended: Pakai EAS Build (Method 1) - paling mudah & reliable!** 🎉
 
