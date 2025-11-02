@@ -2,6 +2,10 @@
 
 Sistem Manajemen Badan Eksekutif Mahasiswa Telkom University dengan versi Web dan Mobile.
 
+## 🚀 Quick Start
+
+**Untuk pertama kali setup, baca [START_HERE.md](START_HERE.md) dulu!**
+
 ## 📁 Struktur Project
 
 ```
