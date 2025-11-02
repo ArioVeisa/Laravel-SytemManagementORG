@@ -40,15 +40,13 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
+        initialRouteName={isLoggedIn ? 'Welcome' : 'Login'}
         screenOptions={{
           headerShown: false,
         }}
       >
-        {isLoggedIn ? (
-          <Stack.Screen name="Welcome" component={WelcomeScreen} />
-        ) : (
-          <Stack.Screen name="Login" component={LoginScreen} />
-        )}
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Welcome" component={WelcomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
