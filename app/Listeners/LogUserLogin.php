@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Models\ActivityLog;
+use App\Models\User;
 use Illuminate\Auth\Events\Login;
 
 class LogUserLogin
@@ -12,6 +13,7 @@ class LogUserLogin
      */
     public function handle(Login $event): void
     {
+        /** @var User $user */
         $user = $event->user;
         ActivityLog::log(
             activityType: 'login',
