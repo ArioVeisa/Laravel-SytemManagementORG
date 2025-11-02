@@ -1,122 +1,214 @@
-# Manajemen dan Informasi BEM Kampus
+# BEM TEL-U Management System
 
-Sistem manajemen dan informasi BEM Kampus untuk pengolahan data, manajemen proposal, serta komunikasi antar anggota. Platform ini bertujuan untuk mempermudah pengelolaan kegiatan organisasi BEM dengan berbagai fitur yang berguna bagi pengurus dan anggota.
+Sistem Manajemen Badan Eksekutif Mahasiswa Telkom University dengan versi Web dan Mobile.
 
-## Fitur Utama
+## 📁 Struktur Project
 
-### 1. **Manajemen Proposal** ✅ SUDAH IMPLEMENTASI
-   - Menyimpan, mengelola, dan memproses proposal acara.
-   - Fitur upload dan download dokumen proposal (PDF, DOC, DOCX).
-   - **Workflow Status Lengkap**: pending_menteri → pending_sekretaris → pending_bendahara → pending_wakil_presiden → pending_presiden → approved/rejected/revisi
-   - Kolom keterangan untuk catatan reviewer.
-   - Badge status berwarna (kuning untuk pending, hijau untuk approved, merah untuk rejected, dll).
-   - Filter proposal berdasarkan status, kementerian, dan tanggal.
-   - Badge notifikasi di navigation menu untuk proposal pending.
-   - Tracking pengaju proposal per user.
+```
+Laravel-SytemManagementORG/
+├── WebVersion/         # Laravel Web Application (Filament Admin Panel)
+├── MobileVersion/      # React Native Expo Mobile App
+└── README.md           # Dokumentasi utama
+```
 
-### 2. **Manajemen Anggota** ✅ SUDAH IMPLEMENTASI
-   - Data lengkap anggota BEM, termasuk peran, kontak, dan status aktif.
-   - **Role Management Lengkap**:
-     * Super Admin (full access)
-     * Presiden BEM
-     * Wakil Presiden BEM
-     * Sekretaris
-     * Bendahara
-     * Menteri
-     * Anggota
-   - Manajemen role per user dengan Spatie Laravel Permission.
-   - Badge jumlah user di navigation.
+## 🌐 WebVersion (Laravel + Filament)
 
-### 3. **Jadwal Kegiatan**
-   - Kalender kegiatan BEM, seperti rapat, acara, dan deadline proposal.
-   - Pengingat kegiatan untuk anggota yang terlibat.
+Aplikasi web admin berbasis Laravel 11 dengan Filament Admin Panel.
 
-### 4. **Manajemen Keuangan**
-   - Pengelolaan anggaran dan laporan keuangan.
-   - Input dan pemantauan transaksi keuangan (pemasukan dan pengeluaran).
-   - Laporan keuangan yang dapat diexport (misal, Excel, PDF).
+### Fitur
+- ✅ User Management dengan Role & Permission
+- ✅ Ministry Management (Kementerian)
+- ✅ Proposal Management dengan workflow approval
+- ✅ Program Kerja Management
+- ✅ Activity Log (khusus Super Admin)
+- ✅ Dashboard dengan charts dan statistik
+- ✅ JWT Authentication API
+- ✅ Landing page dengan tema black & red tech
 
-### 5. **Manajemen Tugas**
-   - Pembagian tugas antara anggota BEM.
-   - Pengaturan tenggat waktu dan status tugas.
-   - Fitur notifikasi jika ada tugas yang mendekati deadline.
+### Tech Stack
+- Laravel 11
+- Filament PHP
+- Spatie Laravel Permission
+- JWT Auth (tymon/jwt-auth)
+- SQLite Database
+- Tailwind CSS
 
-### 6. **Sistem Komunikasi**
-   - Fitur chat antar anggota untuk mempermudah diskusi.
-   - Pengumuman untuk seluruh anggota BEM.
-
-### 7. **Dokumentasi dan Arsip**
-   - Tempat penyimpanan dokumen organisasi seperti notulen rapat, foto acara, dan laporan tahunan.
-   - Pencarian dokumen berdasarkan kategori atau tag.
-
-### 8. **Pengaturan Pengguna dan Izin Akses** ✅ SUDAH IMPLEMENTASI
-   - Manajemen hak akses berdasarkan peran dengan Filament Shield.
-   - Fitur login untuk setiap anggota dengan keamanan berbasis role.
-   - **Policy & Permission System**: view, create, update, delete, restore, force_delete, dll.
-   - Middleware untuk kontrol akses berdasarkan role.
-   - Generate permissions otomatis untuk resources.
-
-### 8.5. **Manajemen Kementerian** ✅ SUDAH IMPLEMENTASI
-   - CRUD data kementerian (5 kementerian default).
-   - Relasi dengan proposal.
-   - Badge jumlah kementerian di navigation.
-
-### 8.6. **Dark Mode** ✅ SUDAH IMPLEMENTASI
-   - Toggle dark/light mode.
-   - Preferensi tersimpan di localStorage.
-
-### 9. **Statistik dan Laporan**
-   - Melihat perkembangan aktivitas BEM secara keseluruhan.
-   - Laporan mingguan/bulanan mengenai kinerja tim dan penggunaan anggaran.
-
-## Teknologi yang Digunakan
-
-- **Backend**: Laravel 11
-- **Admin Panel**: Filament 3
-- **Frontend**: Blade, Tailwind CSS, Vite, Alpine.js
-- **Database**: SQLite (development)
-- **Authentication**: Laravel + Spatie Laravel Permission
-- **Role Management**: Filament Shield
-- **Icons**: Heroicons
-
-## Cara Instalasi
-
+### Setup
 ```bash
-# Clone repository
-git clone [repo-url]
-cd Laravel-SytemManagementORG
-
-# Install dependencies
+cd WebVersion
 composer install
 npm install
-
-# Setup environment
 cp .env.example .env
 php artisan key:generate
+php artisan jwt:secret
+php artisan migrate
+php artisan db:seed
+php artisan serve
+npm run dev
+```
 
-# Setup database
-php artisan migrate:fresh --seed
+Akses: http://localhost:8000/admin
 
-# Build assets
-npm run build
+### Default Users
+- **Email:** admin@mail.com | **Password:** password (Super Admin)
+- **Email:** presiden@mail.com | **Password:** password
+- **Email:** sekretaris@mail.com | **Password:** password
+- **Email:** menteri@mail.com | **Password:** password
 
-# Jalankan server
+## 📱 MobileVersion (React Native Expo)
+
+Aplikasi mobile React Native menggunakan Expo.
+
+### Fitur
+- ✅ Login dengan JWT authentication
+- ✅ Welcome screen dengan user info
+- ✅ Logout functionality
+- ✅ Token persistence
+- ✅ Protected routes
+- ✅ Modern UI dengan tema BEM TEL-U
+
+### Tech Stack
+- React Native 0.81
+- Expo
+- React Navigation
+- Axios
+- AsyncStorage
+- JWT Authentication
+
+### Setup
+```bash
+cd MobileVersion
+npm install
+# Edit src/config/api.js untuk set API base URL
+npm start
+# Atau npm run android
+```
+
+Lihat [MobileVersion/README.md](MobileVersion/README.md) untuk dokumentasi lengkap.
+
+## 🔐 API Documentation
+
+### Endpoints
+- `POST /api/v1/login` - Login user
+- `POST /api/v1/logout` - Logout user  
+- `GET /api/v1/me` - Get current user
+- `POST /api/v1/refresh` - Refresh JWT token
+
+### Testing API
+```bash
+cd WebVersion
+php artisan serve
+# API tersedia di http://localhost:8000/api/v1/login
+```
+
+Lihat [WebVersion/API_README.md](WebVersion/API_README.md) untuk dokumentasi lengkap API.
+
+## 🏗️ Arsitektur
+
+```
+┌─────────────────┐
+│   Mobile App    │
+│  (React Native) │
+└────────┬────────┘
+         │ HTTP/REST
+         │ JWT Token
+         ▼
+┌─────────────────┐
+│  Laravel API    │
+│  (JWT Auth)     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   SQLite DB     │
+└─────────────────┘
+
+┌─────────────────┐
+│   Web Admin     │
+│   (Filament)    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   SQLite DB     │
+└─────────────────┘
+```
+
+## 📋 Role & Permissions
+
+### Super Admin
+- Akses penuh ke semua fitur
+- Manage Activity Log
+- Manage Roles & Permissions
+
+### Presiden BEM
+- View, Create, Update, Delete semua proposal
+- Manage Users dan Ministries
+- Tidak bisa akses Activity Log dan Roles
+
+### Sekretaris / Bendahara
+- View, Create, Update, Delete semua proposal
+- Manage Program Kerja
+- Tidak bisa delete user
+
+### Menteri
+- Manage proposal dan program kerja untuk ministry mereka
+- View semua proposal
+
+### Anggota
+- Create dan view proposal
+- Create dan view program kerja
+
+## 🚀 Getting Started
+
+### 1. Clone Repository
+```bash
+git clone [repository-url]
+cd Laravel-SytemManagementORG
+```
+
+### 2. Setup Web Version
+```bash
+cd WebVersion
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan jwt:secret
+php artisan migrate
+php artisan db:seed
 php artisan serve
 ```
 
-## Credentials Login
+### 3. Setup Mobile Version
+```bash
+cd MobileVersion
+npm install
+# Edit src/config/api.js: set API_BASE_URL ke http://YOUR_IP:8000/api/v1
+npm start
+```
 
-- **Super Admin**: admin@mail.com / password
-- **Presiden**: presiden@mail.com / password
-- **Sekretaris**: sekretaris@mail.com / password
-- **Bendahara**: bendahara@mail.com / password
-- **Menteri**: menteri@mail.com / password
-- **Anggota**: anggota@mail.com / password
+### 4. Testing
+- **Web:** http://localhost:8000/admin
+- **API:** http://localhost:8000/api/v1/login
+- **Mobile:** Scan QR code dengan Expo Go app
 
-Kontribusi
-Jika Anda ingin berkontribusi pada proyek ini, silakan lakukan fork pada repository ini dan buat pull request dengan perubahan yang diinginkan. Pastikan untuk mengikuti pedoman pengkodean yang telah ditetapkan.
+## 📝 Notes
 
-Lisensi
-Proyek ini menggunakan lisensi MIT. Lihat file LICENSE untuk informasi lebih lanjut.
+- Web dan Mobile menggunakan database yang sama (SQLite)
+- JWT token berlaku 60 menit
+- Activity Log hanya bisa diakses oleh Super Admin
+- File upload disimpan di `storage/app/public/proposals/`
 
-create by arioveisa.me
+## 📄 License
+
+BEM TEL-U © 2025
+
+## 👥 Contributors
+
+Badan Eksekutif Mahasiswa Telkom University
+
+---
+
+**Happy Coding! 🚀**
+

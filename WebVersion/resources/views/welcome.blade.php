@@ -7,8 +7,8 @@
         <link rel="icon" href="{{ asset('images/U.png') }}">
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800&display=swap" rel="stylesheet" />
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <style>
+            @vite(['resources/css/app.css', 'resources/js/app.js'])
+            <style>
             * {
                 margin: 0;
                 padding: 0;
@@ -257,8 +257,8 @@
         <!-- Logo -->
         <div class="logo">
             <img src="{{ asset('images/TelU.png') }}" alt="Telkom University">
-        </div>
-        
+                                </div>
+
         <!-- Login Button -->
         @auth
             <a href="{{ url('/admin') }}" class="login-btn">Dashboard</a>
