@@ -7,7 +7,6 @@
 
 # Laravel/WebVersion specific
 WebVersion/node_modules
-WebVersion/vendor
 WebVersion/.env
 WebVersion/.env.backup
 WebVersion/.env.production

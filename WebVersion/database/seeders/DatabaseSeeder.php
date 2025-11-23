@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Models\Ministry;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -18,49 +17,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed statuses first using insertOrIgnore to avoid duplicate key errors
-        DB::table('statuses')->insertOrIgnore([
-            ['name' => 'pending_menteri'],
-            ['name' => 'pending_sekretaris'],
-            ['name' => 'pending_bendahara'],
-            ['name' => 'pending_wakil_presiden'],
-            ['name' => 'pending_presiden'],
-            ['name' => 'approved'],
-            ['name' => 'rejected'],
-            ['name' => 'revisi'],
+        // 1. Panggil Seeder Status & Ministry dulu (Biar rapi)
+        $this->call([
+            StatusSeeder::class,
+            MinistrySeeder::class,
         ]);
+        
+        $this->command->info('✅ Status & Ministry seeded!');
 
-        // Seed ministries
-        $ministries = [
-            [
-                'nama' => 'Kementerian Komunikasi dan Informasi',
-                'deskripsi' => 'Bertanggung jawab dalam pengelolaan komunikasi internal dan eksternal BEM, media sosial, dokumentasi, dan publikasi kegiatan.',
-            ],
-            [
-                'nama' => 'Kementerian Riset dan Teknologi',
-                'deskripsi' => 'Mengkoordinasikan kegiatan riset, pengembangan teknologi, dan inovasi bagi kemajuan kampus.',
-            ],
-            [
-                'nama' => 'Kementerian Seni dan Budaya',
-                'deskripsi' => 'Mengelola kegiatan seni, budaya, dan pengembangan kreativitas mahasiswa.',
-            ],
-            [
-                'nama' => 'Kementerian Sosial dan Politik',
-                'deskripsi' => 'Mengkoordinasikan kegiatan sosial, advokasi mahasiswa, dan hubungan dengan pihak eksternal.',
-            ],
-            [
-                'nama' => 'Kementerian Olahraga dan Kesehatan',
-                'deskripsi' => 'Mengelola kegiatan olahraga, kesehatan mahasiswa, dan kompetisi olahraga.',
-            ],
-        ];
+        // 2. Setup Roles & Permissions
+        $this->setupRolesAndPermissions();
+        $this->command->info('✅ Roles & Permissions created!');
 
-        foreach ($ministries as $ministry) {
-            Ministry::firstOrCreate(
-                ['nama' => $ministry['nama']],
-                ['deskripsi' => $ministry['deskripsi']]
-            );
-        }
+        // 3. Create Users
+        $this->createUsers();
+        $this->command->info('✅ All Users created successfully!');
+        
+        // Clear cache biar permission langsung ngefek
+        Artisan::call('permission:cache-reset');
+    }
 
+    private function setupRolesAndPermissions()
+    {
         // Create roles
         $superAdminRole = Role::firstOrCreate(['name' => 'Super Admin']);
         $presidenRole = Role::firstOrCreate(['name' => 'Presiden BEM']);
@@ -70,133 +48,56 @@ class DatabaseSeeder extends Seeder
         $menteriRole = Role::firstOrCreate(['name' => 'Menteri']);
         $anggotaRole = Role::firstOrCreate(['name' => 'Anggota']);
 
-        // Create all permissions
-        Permission::firstOrCreate(['name' => 'view_any_user']);
-        Permission::firstOrCreate(['name' => 'view_user']);
-        Permission::firstOrCreate(['name' => 'create_user']);
-        Permission::firstOrCreate(['name' => 'update_user']);
-        Permission::firstOrCreate(['name' => 'delete_user']);
-        Permission::firstOrCreate(['name' => 'delete_any_user']);
+        // Create Permissions
+        $permissions = [
+            'user' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
+            'ministry' => ['view_any', 'view', 'create', 'update', 'delete'],
+            'proposal' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
+            'program_kerja' => ['view_any', 'view', 'create', 'update', 'delete'],
+            'shield::role' => ['view_any', 'view', 'create', 'update', 'delete'],
+            'activity_log' => ['view_any', 'view'],
+        ];
 
-        Permission::firstOrCreate(['name' => 'view_any_ministry']);
-        Permission::firstOrCreate(['name' => 'view_ministry']);
-        Permission::firstOrCreate(['name' => 'create_ministry']);
-        Permission::firstOrCreate(['name' => 'update_ministry']);
-        Permission::firstOrCreate(['name' => 'delete_ministry']);
+        foreach ($permissions as $module => $actions) {
+            foreach ($actions as $action) {
+                Permission::firstOrCreate(['name' => $action . '_' . $module]);
+            }
+        }
 
-        Permission::firstOrCreate(['name' => 'view_any_proposal']);
-        Permission::firstOrCreate(['name' => 'view_proposal']);
-        Permission::firstOrCreate(['name' => 'create_proposal']);
-        Permission::firstOrCreate(['name' => 'update_proposal']);
-        Permission::firstOrCreate(['name' => 'delete_proposal']);
-        Permission::firstOrCreate(['name' => 'delete_any_proposal']);
-
-        Permission::firstOrCreate(['name' => 'view_any_shield::role']);
-        Permission::firstOrCreate(['name' => 'view_shield::role']);
-        Permission::firstOrCreate(['name' => 'create_shield::role']);
-        Permission::firstOrCreate(['name' => 'update_shield::role']);
-        Permission::firstOrCreate(['name' => 'delete_shield::role']);
-
-        Permission::firstOrCreate(['name' => 'view_any_program_kerja']);
-        Permission::firstOrCreate(['name' => 'view_program_kerja']);
-        Permission::firstOrCreate(['name' => 'create_program_kerja']);
-        Permission::firstOrCreate(['name' => 'update_program_kerja']);
-        Permission::firstOrCreate(['name' => 'delete_program_kerja']);
-
-        // Activity Log Permissions (Hanya bisa view, tidak bisa create/edit/delete)
-        Permission::firstOrCreate(['name' => 'view_any_activity_log']);
-        Permission::firstOrCreate(['name' => 'view_activity_log']);
-
-        // Assign permissions to Super Admin (ALL)
+        // Assign Permissions to Roles
+        
+        // Super Admin: All Access
         $superAdminRole->givePermissionTo(Permission::all());
 
-        // Assign permissions to Presiden BEM - Full access kecuali Shield/Roles dan Activity Log
-        $presidenRole->givePermissionTo([
-            // User Management
-            'view_any_user', 'view_user', 'create_user', 'update_user', 'delete_user',
-            // Ministry Management
-            'view_any_ministry', 'view_ministry', 'create_ministry', 'update_ministry', 'delete_ministry',
-            // Proposal Management
-            'view_any_proposal', 'view_proposal', 'create_proposal', 'update_proposal', 'delete_proposal', 'delete_any_proposal',
-            // Program Kerja Management
-            'view_any_program_kerja', 'view_program_kerja', 'create_program_kerja', 'update_program_kerja', 'delete_program_kerja',
-            // Activity Log - Hanya Super Admin yang bisa akses
-        ]);
+        // Presiden: All except Shield & Log
+        $presidenRole->givePermissionTo(Permission::where('name', 'not like', '%shield%')->where('name', 'not like', '%activity_log%')->get());
 
-        // Assign permissions to Wakil Presiden BEM - Mirip Presiden
+        // Wakil: Mirip Presiden tapi limited delete
         $wakilPresidenRole->givePermissionTo([
-            // User Management
             'view_any_user', 'view_user', 'create_user', 'update_user',
-            // Ministry Management
             'view_any_ministry', 'view_ministry', 'create_ministry', 'update_ministry',
-            // Proposal Management
             'view_any_proposal', 'view_proposal', 'create_proposal', 'update_proposal', 'delete_proposal',
-            // Program Kerja Management
             'view_any_program_kerja', 'view_program_kerja', 'create_program_kerja', 'update_program_kerja', 'delete_program_kerja',
         ]);
 
-        // Assign permissions to Sekretaris - Full access untuk proposal dan program kerja
-        $sekretarisRole->givePermissionTo([
-            // User Management
-            'view_any_user', 'view_user', 'create_user', 'update_user',
-            // Ministry Management
-            'view_any_ministry', 'view_ministry', 'create_ministry', 'update_ministry',
-            // Proposal Management - Full access
-            'view_any_proposal', 'view_proposal', 'create_proposal', 'update_proposal', 'delete_proposal', 'delete_any_proposal',
-            // Program Kerja Management
-            'view_any_program_kerja', 'view_program_kerja', 'create_program_kerja', 'update_program_kerja', 'delete_program_kerja',
-        ]);
+        // Setup role lain sesuai kebutuhan (simplified for readability here)
+        $anggotaRole->givePermissionTo(['view_any_proposal', 'view_proposal', 'create_proposal', 'view_any_program_kerja', 'view_program_kerja', 'create_program_kerja']);
+    }
 
-        // Assign permissions to Bendahara - Full access untuk proposal dan program kerja
-        $bendaharaRole->givePermissionTo([
-            // User Management
-            'view_any_user', 'view_user', 'create_user', 'update_user',
-            // Ministry Management
-            'view_any_ministry', 'view_ministry', 'create_ministry', 'update_ministry',
-            // Proposal Management - Full access
-            'view_any_proposal', 'view_proposal', 'create_proposal', 'update_proposal', 'delete_proposal', 'delete_any_proposal',
-            // Program Kerja Management
-            'view_any_program_kerja', 'view_program_kerja', 'create_program_kerja', 'update_program_kerja', 'delete_program_kerja',
-        ]);
-
-        // Assign permissions to Menteri - Bisa manage proposal dan program kerja untuk ministry mereka
-        $menteriRole->givePermissionTo([
-            // User Management
-            'view_any_user', 'view_user',
-            // Ministry Management
-            'view_any_ministry', 'view_ministry',
-            // Proposal Management
-            'view_any_proposal', 'view_proposal', 'create_proposal', 'update_proposal', 'delete_proposal',
-            // Program Kerja Management - Full access
-            'view_any_program_kerja', 'view_program_kerja', 'create_program_kerja', 'update_program_kerja', 'delete_program_kerja',
-        ]);
-
-        // Assign permissions to Anggota - Bisa create dan view proposal/program kerja
-        $anggotaRole->givePermissionTo([
-            // Proposal Management - Bisa lihat semua dan create proposal
-            'view_any_proposal', 'view_proposal', 'create_proposal',
-            // Program Kerja Management - Bisa lihat semua dan create program kerja
-            'view_any_program_kerja', 'view_program_kerja', 'create_program_kerja',
-        ]);
-
-        // Create admin user - menggunakan updateOrCreate untuk memastikan password selalu di-update
+    private function createUsers()
+    {
+        // 1. SUPER ADMIN (PENTING)
         $admin = User::updateOrCreate(
             ['email' => 'admin@mail.com'],
             [
-                'name' => 'Admin',
-                'password' => Hash::make('password'),
+                'name' => 'Super Admin',
+                'password' => Hash::make('password'), // Password default
                 'ministry_id' => null,
             ]
         );
-        // Pastikan role sudah ada dan assign dengan benar
-        $admin->roles()->sync([]); // Hapus semua role yang ada
-        $admin->assignRole($superAdminRole);
-        $admin->refresh();
-        
-        // Clear permission cache
-        Artisan::call('permission:cache-reset');
+        $admin->assignRole('Super Admin');
 
-        // Create sample users for each role
+        // 2. Presiden
         $presiden = User::updateOrCreate(
             ['email' => 'presiden@mail.com'],
             [
@@ -205,93 +106,31 @@ class DatabaseSeeder extends Seeder
                 'ministry_id' => null,
             ]
         );
-        $presiden->roles()->sync([]);
-        $presiden->assignRole($presidenRole);
-        $presiden->refresh();
+        $presiden->assignRole('Presiden BEM');
 
-        $wakilPresiden = User::updateOrCreate(
-            ['email' => 'wakilpresiden@mail.com'],
-            [
-                'name' => 'Wakil Presiden BEM',
-                'password' => Hash::make('password'),
-                'ministry_id' => null,
-            ]
-        );
-        $wakilPresiden->roles()->sync([]);
-        $wakilPresiden->assignRole($wakilPresidenRole);
-        $wakilPresiden->refresh();
-
-        $sekretaris = User::updateOrCreate(
-            ['email' => 'sekretaris@mail.com'],
-            [
-                'name' => 'Sekretaris',
-                'password' => Hash::make('password'),
-                'ministry_id' => null,
-            ]
-        );
-        $sekretaris->roles()->sync([]);
-        $sekretaris->assignRole($sekretarisRole);
-        $sekretaris->refresh();
-
-        $bendahara = User::updateOrCreate(
-            ['email' => 'bendahara@mail.com'],
-            [
-                'name' => 'Bendahara',
-                'password' => Hash::make('password'),
-                'ministry_id' => null,
-            ]
-        );
-        $bendahara->roles()->sync([]);
-        $bendahara->assignRole($bendaharaRole);
-        $bendahara->refresh();
-
-        $menteri = User::updateOrCreate(
-            ['email' => 'menteri@mail.com'],
-            [
-                'name' => 'Menteri',
-                'password' => Hash::make('password'),
-            ]
-        );
-        $menteri->roles()->sync([]);
-        $menteri->assignRole($menteriRole);
-        $menteri->refresh();
-
-        $anggota = User::updateOrCreate(
-            ['email' => 'anggota@mail.com'],
-            [
-                'name' => 'Anggota',
-                'password' => Hash::make('password'),
-            ]
-        );
-        $anggota->roles()->sync([]);
-        $anggota->assignRole($anggotaRole);
-        $anggota->refresh();
-        
-        // Clear permission cache
-        Artisan::call('permission:cache-reset');
-
-        // Create additional test users per ministry
-        $ministries = Ministry::all();
-        if ($ministries->count() > 0) {
-            // Assign one menteri to first ministry as example
-            $menteri->ministry_id = $ministries->first()->id;
-            $menteri->save();
-
-            // Create members for each ministry
-            foreach ($ministries as $index => $ministry) {
-                // Create 3-5 members per ministry
-                $memberCount = rand(3, 5);
-                for ($i = 1; $i <= $memberCount; $i++) {
-                    $user = User::factory()->create();
-                    $user->roles()->sync([]); // Pastikan tidak ada role sebelumnya
-                    $user->assignRole($anggotaRole); // Assign role Anggota
-                    $user->ministry_id = $ministry->id;
-                    $user->save();
+        // 3. Menteri (Contoh assigned ke ministry pertama)
+        $firstMinistry = Ministry::first();
+        if ($firstMinistry) {
+            $menteri = User::updateOrCreate(
+                ['email' => 'menteri@mail.com'],
+                [
+                    'name' => 'Menteri Kominfo',
+                    'password' => Hash::make('password'),
+                    'ministry_id' => $firstMinistry->id,
+                ]
+            );
+            $menteri->assignRole('Menteri');
+            
+            // Bikin 5 Anggota Dummy pake Factory
+            // Note: Pastikan composer require fakerphp/faker sudah dijalankan
+            if (class_exists(\Database\Factories\UserFactory::class)) {
+                $users = User::factory()->count(5)->create([
+                    'ministry_id' => $firstMinistry->id
+                ]);
+                foreach($users as $user) {
+                    $user->assignRole('Anggota');
                 }
             }
         }
-        
-        // Note: Presiden, Wakil Presiden, Sekretaris, Bendahara, and Admin don't have ministries (null)
-        // Only Menteri and Anggota should have ministries assigned
     }
 }

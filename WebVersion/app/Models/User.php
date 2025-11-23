@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\FilamentUser; // <--- PENTING BUAT FILAMENT
+use Filament\Panel; // <--- PENTING BUAT FILAMENT
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,7 +12,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+// Perhatikan: implements nambah FilamentUser
+class User extends Authenticatable implements JWTSubject, FilamentUser 
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles, HasApiTokens;
@@ -76,5 +79,17 @@ class User extends Authenticatable implements JWTSubject
 
     public function programKerjas(){
         return $this->hasMany(ProgramKerja::class);
+    }
+
+    // =================================================================
+    //  INI KUNCI BIAR BISA LOGIN DI AZURE (PRODUCTION)
+    // =================================================================
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // Logikanya:
+        // 1. Cek apakah user punya role 'Super Admin'
+        // 2. ATAU cek apakah emailnya 'admin@mail.com' (buat jaga-jaga)
+        
+        return $this->hasRole('Super Admin') || $this->email === 'admin@mail.com';
     }
 }
